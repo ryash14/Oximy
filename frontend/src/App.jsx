@@ -211,7 +211,7 @@ function App() {
           <span className="brand-name">Oximy Core</span>
           <span className="brand-tag">Production Ready</span>
         </div>
-        <a href="https://github.com/ryash14" target="_blank" rel="noreferrer" className="github-btn pulse-glow">
+        <a href="https://github.com/ryash14/Oximy" target="_blank" rel="noreferrer" className="github-btn pulse-glow">
           <Code size={16} /> <span style={{ fontSize: '0.875rem' }}>Check My GitHub</span> <ArrowUpRight size={14} />
         </a>
       </header>
