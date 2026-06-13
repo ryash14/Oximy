@@ -1,12 +1,16 @@
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from database import get_connection, ingest_event, get_event, generate_event_id
+from database import get_connection, ingest_event, get_event, generate_event_id, init_db
 from metrics import get_weekly_active_ai_users
 from parsers import ParserRegistry, StructuralDriftException
 import json
 import random
 
 app = FastAPI(title="Oximy Core API")
+
+@app.on_event("startup")
+def startup_event():
+    init_db()
 
 app.add_middleware(
     CORSMiddleware,
