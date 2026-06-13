@@ -10,7 +10,7 @@ import {
   ResponsiveContainer, BarChart, Bar
 } from 'recharts'
 
-const API = 'http://localhost:8000'
+const API = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 // ── Pre-built scenarios ──
 const SCENARIOS = {
@@ -104,10 +104,10 @@ function App() {
     setP1Loading(true)
     setP1Source(source)
     const payload = SCENARIOS[`canonical_${source}`]
-    
+
     // Regenerate ID so we can insert multiple times without upserting automatically
     if (payload.id) {
-        payload.id = `${source}-${Math.floor(Math.random() * 1000000)}`
+      payload.id = `${source}-${Math.floor(Math.random() * 1000000)}`
     }
 
     try {
@@ -156,11 +156,11 @@ function App() {
     setP2Loading(false)
   }
 
-  const resetDedup = () => { 
-    SCENARIOS.duplicate.id = `chatcmpl-dedup-${Math.floor(Math.random()*10000)}`
-    setP2Step(0); 
-    setP2Results([]); 
-    setP2TokensBefore(null) 
+  const resetDedup = () => {
+    SCENARIOS.duplicate.id = `chatcmpl-dedup-${Math.floor(Math.random() * 10000)}`
+    setP2Step(0);
+    setP2Results([]);
+    setP2TokensBefore(null)
   }
 
   // ── Problem 3: Drift ──
@@ -212,7 +212,7 @@ function App() {
           <span className="brand-tag">Production Ready</span>
         </div>
         <a href="https://github.com/ryash14" target="_blank" rel="noreferrer" className="github-btn pulse-glow">
-          <Code size={16} /> <span style={{fontSize: '0.875rem'}}>Check My GitHub</span> <ArrowUpRight size={14} />
+          <Code size={16} /> <span style={{ fontSize: '0.875rem' }}>Check My GitHub</span> <ArrowUpRight size={14} />
         </a>
       </header>
 
@@ -265,7 +265,7 @@ function App() {
               <BarChart data={sourceData} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" horizontal={false} />
                 <XAxis type="number" stroke="#71717a" fontSize={11} tickLine={false} axisLine={false} />
-                <YAxis type="category" dataKey="name" stroke="#71717a" fontSize={11} tickLine={false} axisLine={false} width={80} style={{textTransform: 'capitalize'}}/>
+                <YAxis type="category" dataKey="name" stroke="#71717a" fontSize={11} tickLine={false} axisLine={false} width={80} style={{ textTransform: 'capitalize' }} />
                 <Tooltip contentStyle={{ background: '#18181b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 12 }} />
                 <Bar dataKey="tokens" fill="#3b82f6" radius={[0, 4, 4, 0]} />
               </BarChart>
@@ -276,8 +276,8 @@ function App() {
 
       {/* ━━ THE THREE HARD PROBLEMS ━━ */}
       <div className="fi d4" style={{ margin: '5rem 0 3rem' }}>
-        <div className="sec-heading" style={{fontSize: '1.75rem'}}>The Three Hardest Data Engineering Problems</div>
-        <div className="sec-sub" style={{fontSize: '1rem', maxWidth: '800px'}}>
+        <div className="sec-heading" style={{ fontSize: '1.75rem' }}>The Three Hardest Data Engineering Problems</div>
+        <div className="sec-sub" style={{ fontSize: '1rem', maxWidth: '800px' }}>
           From the Oximy JD: "Sources arrive in incompatible shapes. Facts arrive late. Every source redelivers at least once."
           Each section below is an interactive proof that this architecture handles these exact challenges cleanly.
         </div>
@@ -293,8 +293,8 @@ function App() {
             <div>
               <div className="problem-title">Problem 1: The Canonical Event (Schema Unification)</div>
               <div className="problem-desc">
-                OpenAI uses <code style={{color:'var(--green)'}}>prompt_tokens</code>. Claude uses <code style={{color:'var(--green)'}}>input_tokens</code>. Gemini uses <code style={{color:'var(--green)'}}>usageMetadata</code>. Cohere uses <code style={{color:'var(--green)'}}>meta.billed_units</code>.
-                Our Parser Registry intercepts all of these distinct structures and maps them into one unified <code style={{color:'var(--green)'}}>CanonicalAIEvent</code> shape, preserving the raw payload perfectly.
+                OpenAI uses <code style={{ color: 'var(--green)' }}>prompt_tokens</code>. Claude uses <code style={{ color: 'var(--green)' }}>input_tokens</code>. Gemini uses <code style={{ color: 'var(--green)' }}>usageMetadata</code>. Cohere uses <code style={{ color: 'var(--green)' }}>meta.billed_units</code>.
+                Our Parser Registry intercepts all of these distinct structures and maps them into one unified <code style={{ color: 'var(--green)' }}>CanonicalAIEvent</code> shape, preserving the raw payload perfectly.
               </div>
             </div>
           </div>
@@ -320,7 +320,7 @@ function App() {
                       <strong>{isSuccess(p1Result) ? 'Success' : 'Error'}:</strong> {p1Result.message}
                     </div>
                     {p1Result.event && (
-                      <div className="json-box" style={{marginTop: '1rem'}}>
+                      <div className="json-box" style={{ marginTop: '1rem' }}>
                         {JSON.stringify(p1Result.event, null, 2)}
                       </div>
                     )}
@@ -353,8 +353,8 @@ function App() {
               <div className="problem-title">Problem 2: Exactly-Once Semantics (Deduplication)</div>
               <div className="problem-desc">
                 Every vendor redelivers webhooks. Without a deterministic dedup key, the same activity double-counts.
-                We hash <code style={{color:'var(--green)'}}>SHA256(source + vendor_id)</code> to generate a rock-solid <code style={{color:'var(--green)'}}>event_id</code>.
-                When a duplicate arrives, we run <code style={{color:'var(--green)'}}>ON CONFLICT DO UPDATE</code> — updating late facts (like costs) but <strong>never</strong> double-counting tokens.
+                We hash <code style={{ color: 'var(--green)' }}>SHA256(source + vendor_id)</code> to generate a rock-solid <code style={{ color: 'var(--green)' }}>event_id</code>.
+                When a duplicate arrives, we run <code style={{ color: 'var(--green)' }}>ON CONFLICT DO UPDATE</code> — updating late facts (like costs) but <strong>never</strong> double-counting tokens.
               </div>
             </div>
           </div>
@@ -365,7 +365,7 @@ function App() {
                 <div className="json-box">{JSON.stringify(SCENARIOS.duplicate, null, 2)}</div>
                 <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
                   {p2Step === 0 && (
-                    <button className="btn btn-accent btn-full" onClick={runDedup} disabled={p2Loading} style={{padding: '0.75rem'}}>
+                    <button className="btn btn-accent btn-full" onClick={runDedup} disabled={p2Loading} style={{ padding: '0.75rem' }}>
                       <Play size={16} /> Step 1: Ingest 750 Tokens
                     </button>
                   )}
@@ -375,7 +375,7 @@ function App() {
                     </button>
                   )}
                   {p2Step === 2 && (
-                    <button className="btn btn-ghost btn-full" onClick={resetDedup} style={{padding: '0.75rem'}}>
+                    <button className="btn btn-ghost btn-full" onClick={resetDedup} style={{ padding: '0.75rem' }}>
                       <RefreshCw size={16} /> Reset Dedup Demo
                     </button>
                   )}
@@ -418,9 +418,9 @@ function App() {
             <div>
               <div className="problem-title">Problem 3: Structural Drift Prevention</div>
               <div className="problem-desc">
-                What if OpenAI silently renames <code style={{color:'var(--green)'}}>prompt_tokens</code> to <code style={{color:'var(--red)'}}>input_tokens</code> in a minor API update?
-                A naive parser would read <code style={{color:'var(--red)'}}>null</code> and report $0 cost — a silent failure that destroys dashboard trust.
-                Our parser throws a <code style={{color:'var(--red)'}}>StructuralDriftException</code> the exact moment a required path is missing.
+                What if OpenAI silently renames <code style={{ color: 'var(--green)' }}>prompt_tokens</code> to <code style={{ color: 'var(--red)' }}>input_tokens</code> in a minor API update?
+                A naive parser would read <code style={{ color: 'var(--red)' }}>null</code> and report $0 cost — a silent failure that destroys dashboard trust.
+                Our parser throws a <code style={{ color: 'var(--red)' }}>StructuralDriftException</code> the exact moment a required path is missing.
               </div>
             </div>
           </div>
@@ -449,7 +449,7 @@ function App() {
                     </div>
                     <p style={{ fontSize: '0.875rem', color: 'var(--text-3)', marginTop: '1.5rem', lineHeight: '1.6' }}>
                       The event was <strong style={{ color: 'var(--text)' }}>rejected cleanly at the Parser layer</strong> — it never touched the database.
-                      The dashboard metrics remain uncorrupted. 
+                      The dashboard metrics remain uncorrupted.
                     </p>
                     <div style={{ marginTop: '1rem', padding: '1rem', background: 'var(--bg-card)', border: '1px dashed var(--border-strong)', borderRadius: 'var(--r-sm)', fontSize: '0.8125rem', color: 'var(--text-2)' }}>
                       <strong>Replay Mechanism:</strong> Because the original raw payload is preserved in a Dead Letter Queue (DLQ), once the engineering team updates the parser to handle the new schema, this exact event can be replayed. Zero history is lost.
@@ -470,14 +470,14 @@ function App() {
       {/* ━━ CANONICAL FEED ━━ */}
       <div className="sec-label fi d5" style={{ marginTop: '4rem' }}>Canonical Event Feed · Source of Truth</div>
       <div className="card fi d5" style={{ marginBottom: '4rem' }}>
-        <div className="card-head" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-          <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
+        <div className="card-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
             <h3><Database size={15} /> Unified Event Table</h3>
             <span className="card-tag">{events.length} rows</span>
           </div>
           <button className="btn btn-ghost" onClick={resolveCosts} disabled={costResolving}>
-             {costResolving ? <Loader size={14} className="spin" /> : <RefreshCw size={14} />}
-             Resolve Pending Costs (Batch Job)
+            {costResolving ? <Loader size={14} className="spin" /> : <RefreshCw size={14} />}
+            Resolve Pending Costs (Batch Job)
           </button>
         </div>
         <div style={{ maxHeight: 400, overflowY: 'auto' }}>
@@ -520,26 +520,26 @@ function App() {
           <div className="pipeline">
             <div className="pipe-stage">
               <div className="pipe-icon" style={{ background: 'var(--accent-dim)' }}><Server size={22} color="var(--accent)" /></div>
-              <div className="pipe-name" style={{fontSize: '0.9375rem', marginTop: '0.5rem'}}>API Gateway</div>
-              <div className="pipe-sub" style={{fontSize: '0.8125rem'}}>Receives raw webhooks asynchronously from any AI provider.</div>
+              <div className="pipe-name" style={{ fontSize: '0.9375rem', marginTop: '0.5rem' }}>API Gateway</div>
+              <div className="pipe-sub" style={{ fontSize: '0.8125rem' }}>Receives raw webhooks asynchronously from any AI provider.</div>
               <div className="pipe-arrow"><ChevronRight size={20} /></div>
             </div>
             <div className="pipe-stage">
               <div className="pipe-icon" style={{ background: 'var(--red-dim)' }}><Shield size={22} color="var(--red)" /></div>
-              <div className="pipe-name" style={{fontSize: '0.9375rem', marginTop: '0.5rem'}}>Drift Detector</div>
-              <div className="pipe-sub" style={{fontSize: '0.8125rem'}}>Enforces strict schema compliance. Rejects silent structural changes.</div>
+              <div className="pipe-name" style={{ fontSize: '0.9375rem', marginTop: '0.5rem' }}>Drift Detector</div>
+              <div className="pipe-sub" style={{ fontSize: '0.8125rem' }}>Enforces strict schema compliance. Rejects silent structural changes.</div>
               <div className="pipe-arrow"><ChevronRight size={20} /></div>
             </div>
             <div className="pipe-stage">
               <div className="pipe-icon" style={{ background: 'var(--accent-dim)' }}><Hash size={22} color="var(--accent)" /></div>
-              <div className="pipe-name" style={{fontSize: '0.9375rem', marginTop: '0.5rem'}}>SHA-256 Hasher</div>
-              <div className="pipe-sub" style={{fontSize: '0.8125rem'}}>Derives deterministic identity key from (source + vendor_id).</div>
+              <div className="pipe-name" style={{ fontSize: '0.9375rem', marginTop: '0.5rem' }}>SHA-256 Hasher</div>
+              <div className="pipe-sub" style={{ fontSize: '0.8125rem' }}>Derives deterministic identity key from (source + vendor_id).</div>
               <div className="pipe-arrow"><ChevronRight size={20} /></div>
             </div>
             <div className="pipe-stage">
               <div className="pipe-icon" style={{ background: 'var(--green-dim)' }}><Save size={22} color="var(--green)" /></div>
-              <div className="pipe-name" style={{fontSize: '0.9375rem', marginTop: '0.5rem'}}>Idempotent Store</div>
-              <div className="pipe-sub" style={{fontSize: '0.8125rem'}}>ON CONFLICT DO UPDATE. Safely backfills late-arriving costs.</div>
+              <div className="pipe-name" style={{ fontSize: '0.9375rem', marginTop: '0.5rem' }}>Idempotent Store</div>
+              <div className="pipe-sub" style={{ fontSize: '0.8125rem' }}>ON CONFLICT DO UPDATE. Safely backfills late-arriving costs.</div>
             </div>
           </div>
         </div>
@@ -550,15 +550,15 @@ function App() {
       <div className="g3 fi d6" style={{ marginBottom: '4rem' }}>
         <div className="scope">
           <h4><Layers size={16} color="var(--accent)" /> Kafka + ClickHouse</h4>
-          <p style={{fontSize: '0.875rem', marginTop: '0.5rem', lineHeight: '1.6'}}>Replace SQLite with a Kafka topic for high-throughput ingest and ClickHouse for sub-second columnar analytics. The Canonical Schema remains identical.</p>
+          <p style={{ fontSize: '0.875rem', marginTop: '0.5rem', lineHeight: '1.6' }}>Replace SQLite with a Kafka topic for high-throughput ingest and ClickHouse for sub-second columnar analytics. The Canonical Schema remains identical.</p>
         </div>
         <div className="scope">
           <h4><Shield size={16} color="var(--red)" /> Policy Engine</h4>
-          <p style={{fontSize: '0.875rem', marginTop: '0.5rem', lineHeight: '1.6'}}>Attach spend limits, model allowlists, and PII redaction rules. Because all events flow through one pipeline, policies can be enforced globally at the Drift Detector stage.</p>
+          <p style={{ fontSize: '0.875rem', marginTop: '0.5rem', lineHeight: '1.6' }}>Attach spend limits, model allowlists, and PII redaction rules. Because all events flow through one pipeline, policies can be enforced globally at the Drift Detector stage.</p>
         </div>
         <div className="scope">
           <h4><Users size={16} color="var(--green)" /> Identity Resolution</h4>
-          <p style={{fontSize: '0.875rem', marginTop: '0.5rem', lineHeight: '1.6'}}>The <code style={{color: 'var(--green)'}}>identity_id</code> field exists but is unresolved at ingest. An asynchronous batch job maps these events back to SSO identities for precise cost attribution.</p>
+          <p style={{ fontSize: '0.875rem', marginTop: '0.5rem', lineHeight: '1.6' }}>The <code style={{ color: 'var(--green)' }}>identity_id</code> field exists but is unresolved at ingest. An asynchronous batch job maps these events back to SSO identities for precise cost attribution.</p>
         </div>
       </div>
 
