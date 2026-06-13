@@ -37,7 +37,7 @@ const SCENARIOS = {
     meta: { billed_units: { input_tokens: 80, output_tokens: 120 } }
   },
   duplicate: {
-    id: "chatcmpl-dedup-master-key",
+    id: `chatcmpl-dedup-${Math.floor(Math.random() * 10000)}`,
     object: "chat.completion",
     created: 1717200000,
     model: "gpt-4-turbo",
@@ -449,9 +449,11 @@ function App() {
                     </div>
                     <p style={{ fontSize: '0.875rem', color: 'var(--text-3)', marginTop: '1.5rem', lineHeight: '1.6' }}>
                       The event was <strong style={{ color: 'var(--text)' }}>rejected cleanly at the Parser layer</strong> — it never touched the database.
-                      The dashboard metrics remain uncorrupted. In production, this exception routes to an alerting system, notifying
-                      the engineering team to update the parser. Trust is maintained.
+                      The dashboard metrics remain uncorrupted. 
                     </p>
+                    <div style={{ marginTop: '1rem', padding: '1rem', background: 'var(--bg-card)', border: '1px dashed var(--border-strong)', borderRadius: 'var(--r-sm)', fontSize: '0.8125rem', color: 'var(--text-2)' }}>
+                      <strong>Replay Mechanism:</strong> Because the original raw payload is preserved in a Dead Letter Queue (DLQ), once the engineering team updates the parser to handle the new schema, this exact event can be replayed. Zero history is lost.
+                    </div>
                   </>
                 ) : (
                   <p style={{ fontSize: '0.875rem', color: 'var(--text-3)', lineHeight: '1.6' }}>
