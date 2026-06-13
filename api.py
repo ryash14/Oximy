@@ -11,7 +11,7 @@ app = FastAPI(title="Oximy Core API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Allow all origins for the Vercel deployment prototype
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
