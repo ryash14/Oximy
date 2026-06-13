@@ -467,15 +467,17 @@ function App() {
         </div>
       </div>
 
-      {/* ━━ CANONICAL FEED ━━ */}
-      <div className="sec-label fi d5" style={{ marginTop: '4rem' }}>Canonical Event Feed · Source of Truth</div>
+      <div className="sec-label fi d5" style={{ marginTop: '4rem', display: 'flex', justifyContent: 'space-between' }}>
+        <span>Canonical Event Feed · Source of Truth</span>
+        <span style={{color: 'var(--text-3)', textTransform: 'none', letterSpacing: 'normal'}}>*Timestamps in UTC (Server Time)</span>
+      </div>
       <div className="card fi d5" style={{ marginBottom: '4rem' }}>
         <div className="card-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
             <h3><Database size={15} /> Unified Event Table</h3>
             <span className="card-tag">{events.length} rows</span>
           </div>
-          <button className="btn btn-ghost" onClick={resolveCosts} disabled={costResolving}>
+          <button className="btn btn-ghost" onClick={resolveCosts} disabled={costResolving} style={{ padding: '0.4rem 0.75rem', fontSize: '0.75rem' }}>
             {costResolving ? <Loader size={14} className="spin" /> : <RefreshCw size={14} />}
             Resolve Pending Costs (Batch Job)
           </button>
@@ -484,39 +486,41 @@ function App() {
           <table>
             <thead>
               <tr>
-                <th style={{ paddingLeft: '2rem' }}>AI Source</th>
-                <th>Model</th>
-                <th>Operation</th>
-                <th style={{ textAlign: 'right' }}>Total Tokens</th>
-                <th style={{ textAlign: 'right', paddingRight: '2rem' }}>Calculated Cost</th>
+                <th>Time</th><th>Source</th><th>Action / Model</th><th>Tokens</th><th>Cost</th>
               </tr>
             </thead>
             <tbody>
-              {events.map(ev => (
-                <tr key={ev.event_id}>
-                  <td style={{ paddingLeft: '2rem' }}><span className={`badge badge-${ev.source}`}>{ev.source}</span></td>
-                  <td style={{ fontWeight: 500 }}>{ev.model_name.replace('-20240229', '').replace('-0125', '')}</td>
-                  <td style={{ color: 'var(--text-3)' }}>{ev.action}</td>
-                  <td style={{ textAlign: 'right', fontWeight: 600 }}>{ev.total_tokens.toLocaleString()}</td>
-                  <td style={{ textAlign: 'right', paddingRight: '2rem' }} className={ev.cost_usd > 0 ? 'cost-ok' : 'cost-wait'}>
-                    {ev.cost_usd > 0 ? `$${ev.cost_usd.toFixed(4)}` : 'Resolving...'}
+              {events.map(e => (
+                <tr key={e.event_id}>
+                  <td>
+                    {new Date(e.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                  </td>
+                  <td><span className={`badge badge-${e.source.toLowerCase()}`}>{e.source}</span></td>
+                  <td>{e.action}<br /><span style={{ fontSize: '0.6875rem', color: 'var(--text-3)' }}>{e.model_name}</span></td>
+                  <td>{e.total_tokens.toLocaleString()}</td>
+                  <td className={e.cost_usd ? 'cost-ok' : 'cost-wait'}>
+                    {e.cost_usd ? `$${e.cost_usd.toFixed(4)}` : 'pending'}
                   </td>
                 </tr>
               ))}
+              {events.length === 0 && (
+                <tr><td colSpan="5" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-3)' }}>The event stream is waiting. Ingest a payload above.</td></tr>
+              )}
             </tbody>
           </table>
         </div>
       </div>
 
       {/* ━━ ARCHITECTURE ━━ */}
-      <div className="sec-label fi d6">System Architecture</div>
-      <div className="card fi d6" style={{ marginBottom: '4rem' }}>
-        <div className="card-head"><h3><Database size={15} /> Deterministic Ingestion Pipeline</h3><span className="card-tag">4 phases</span></div>
-        <div className="card-body">
-          <p style={{ fontSize: '0.9375rem', color: 'var(--text-3)', marginBottom: '2.5rem', lineHeight: 1.6, maxWidth: 900 }}>
-            Every AI event flows through four immutable stages. Each stage isolates and solves a specific distributed systems problem.
-            This architecture ensures absolute data integrity regardless of vendor instability.
-          </p>
+      <div className="fi d6" style={{ marginBottom: '3rem' }}>
+        <div className="sec-label">System Design</div>
+        <div className="sec-heading">Immutable 4-Stage Pipeline</div>
+        <div className="sec-sub">
+          This architecture ensures that regardless of how badly a vendor breaks their schema or redelivers webhooks, 
+          the internal data model remains pristine.
+        </div>
+        
+        <div style={{ background: 'var(--bg-card)', padding: '2.5rem', borderRadius: 'var(--r)', border: '1px solid var(--border)' }}>
           <div className="pipeline">
             <div className="pipe-stage">
               <div className="pipe-icon" style={{ background: 'var(--accent-dim)' }}><Server size={22} color="var(--accent)" /></div>
@@ -525,13 +529,13 @@ function App() {
               <div className="pipe-arrow"><ChevronRight size={20} /></div>
             </div>
             <div className="pipe-stage">
-              <div className="pipe-icon" style={{ background: 'var(--red-dim)' }}><Shield size={22} color="var(--red)" /></div>
+              <div className="pipe-icon" style={{ background: 'var(--red-dim)' }}><AlertTriangle size={22} color="var(--red)" /></div>
               <div className="pipe-name" style={{ fontSize: '0.9375rem', marginTop: '0.5rem' }}>Drift Detector</div>
               <div className="pipe-sub" style={{ fontSize: '0.8125rem' }}>Enforces strict schema compliance. Rejects silent structural changes.</div>
               <div className="pipe-arrow"><ChevronRight size={20} /></div>
             </div>
             <div className="pipe-stage">
-              <div className="pipe-icon" style={{ background: 'var(--accent-dim)' }}><Hash size={22} color="var(--accent)" /></div>
+              <div className="pipe-icon" style={{ background: 'var(--yellow-dim)' }}><Hash size={22} color="var(--yellow)" /></div>
               <div className="pipe-name" style={{ fontSize: '0.9375rem', marginTop: '0.5rem' }}>SHA-256 Hasher</div>
               <div className="pipe-sub" style={{ fontSize: '0.8125rem' }}>Derives deterministic identity key from (source + vendor_id).</div>
               <div className="pipe-arrow"><ChevronRight size={20} /></div>
@@ -545,8 +549,6 @@ function App() {
         </div>
       </div>
 
-      {/* ━━ SCALING ━━ */}
-      <div className="sec-label fi d6">Engineering Roadmap · How This Scales</div>
       <div className="g3 fi d6" style={{ marginBottom: '4rem' }}>
         <div className="scope">
           <h4><Layers size={16} color="var(--accent)" /> Kafka + ClickHouse</h4>
@@ -562,42 +564,44 @@ function App() {
         </div>
       </div>
 
-      {/* ━━ ABOUT ━━ */}
+      {/* ━━ ABOUT / HIRE ME ━━ */}
       <div className="about fi d7">
         <div className="about-grid">
           <div>
-            <div className="sec-label">About the Builder</div>
+            <div className="sec-label">Why Yashwanth?</div>
             <div className="about-quote">
-              "I read the Oximy JD, reverse-engineered the core data engineering problems, and built a fully functional ingestion engine before submitting my resume. My GitHub speaks for itself."
+              "We're building the system of record for how the world uses AI... The company that makes it legible and controllable owns it."
             </div>
-            <p style={{ fontSize: '0.9375rem', color: 'var(--text-3)', lineHeight: 1.7, marginBottom: '2rem' }}>
-              This entire prototype was architected and built by <strong style={{ color: 'var(--text)' }}>Yashwanth</strong> using
-              an agentic AI workflow — precisely how Oximy envisions the future of engineering.
-              I delegated the boilerplate to the agent, identified the critical architectural walls (structural drift, idempotent deduplication, schema normalization),
-              and solved them with production-grade code.
+            <p style={{ fontSize: '0.9375rem', color: 'var(--text-2)', lineHeight: '1.7', marginBottom: '1.5rem' }}>
+              I read the Job Description and realized talk is cheap. Rather than sending a traditional resume, I spent a few hours building an engine that solves the three hardest problems you outlined.
             </p>
-            <a href="https://github.com/ryash14" target="_blank" rel="noreferrer" className="github-btn pulse-glow" style={{ display: 'inline-flex', padding: '0.875rem 1.75rem', fontSize: '0.9375rem', borderRadius: '12px' }}>
-              <Code size={18} /> View Source Code on GitHub <ArrowUpRight size={16} />
-            </a>
+            <p style={{ fontSize: '0.9375rem', color: 'var(--text-2)', lineHeight: '1.7' }}>
+              I use AI agents to blast through boilerplate so I can focus purely on hard distributed systems architecture. I don't just "use AI" — I build systems that make AI usage safe and accountable at scale. <strong>If you want an engineer who ships like they have eight hands, hire me.</strong>
+            </p>
+            <div style={{ marginTop: '2rem' }}>
+              <a href="https://github.com/ryash14/Oximy" target="_blank" rel="noreferrer" className="btn btn-accent pulse-glow" style={{ padding: '0.8rem 1.5rem', fontSize: '1rem' }}>
+                <Terminal size={18} /> View the Code & Hire Me
+              </a>
+            </div>
           </div>
           <div>
-            <div className="sec-label">Mapping JD Requirements to Execution</div>
+            <div className="sec-label">The Fit</div>
             <ul className="fit-list">
               <li className="fit-item">
-                <span className="fit-check"><CheckCircle size={12} color="var(--green)" /></span>
-                <span><strong style={{ color: 'var(--text)' }}>"Ship like you have eight hands"</strong> — I designed and shipped a FastAPI backend, an SQLite idempotent ingestion engine, a 4-vendor parser registry, and a React dashboard in a single session.</span>
+                <div className="fit-check"><CheckCircle size={12} color="var(--green)" /></div>
+                <div><strong>Solves Hard Problems First:</strong> Didn't build a wrapper; built a deterministic parser registry and idempotent event store.</div>
               </li>
               <li className="fit-item">
-                <span className="fit-check"><CheckCircle size={12} color="var(--green)" /></span>
-                <span><strong style={{ color: 'var(--text)' }}>"Go find the wall"</strong> — I didn't gloss over structural drift. I engineered a strict parsing layer that catches vendor schema changes and throws exceptions before data corruption occurs.</span>
+                <div className="fit-check"><CheckCircle size={12} color="var(--green)" /></div>
+                <div><strong>Understands Abstractions:</strong> The Canonical Event is narrow enough to query, but total enough to hold any vendor's raw payload without loss.</div>
               </li>
               <li className="fit-item">
-                <span className="fit-check"><CheckCircle size={12} color="var(--green)" /></span>
-                <span><strong style={{ color: 'var(--text)' }}>"Obsessive about taste"</strong> — The engineering is meaningless if the UX is poor. Every detail, from the color contrast to the custom scrollbars, was meticulously refined.</span>
+                <div className="fit-check"><CheckCircle size={12} color="var(--green)" /></div>
+                <div><strong>Agentic Velocity:</strong> Capable of spinning up full-stack prototypes, complete with styling, API gateways, and SQLite backends in a single session.</div>
               </li>
               <li className="fit-item">
-                <span className="fit-check"><CheckCircle size={12} color="var(--green)" /></span>
-                <span><strong style={{ color: 'var(--text)' }}>"Break the agents, build guardrails"</strong> — The interactive demos above execute the live production codebase. It's not a mockup; it's a verifiable proof of concept. Try to break it.</span>
+                <div className="fit-check"><CheckCircle size={12} color="var(--green)" /></div>
+                <div><strong>Extreme Ownership:</strong> Found the JD, recognized the difficulty of the engineering walls, and independently built the proof-of-work.</div>
               </li>
             </ul>
           </div>

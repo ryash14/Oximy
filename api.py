@@ -64,6 +64,7 @@ def simulate_late_cost():
         return {"status": "success", "message": "No pending costs to resolve."}
         
     resolved_count = 0
+    dummy_users = ["usr_a1b2", "usr_c3d4", "usr_e5f6", "usr_g7h8", "usr_i9j0"]
     for row in rows:
         event_id = row['event_id']
         tokens = row['total_tokens']
@@ -72,7 +73,12 @@ def simulate_late_cost():
         if simulated_cost == 0:
             simulated_cost = random.uniform(0.001, 0.05)
             
-        cursor.execute("UPDATE events SET cost_usd = ? WHERE event_id = ?", (simulated_cost, event_id))
+        simulated_identity = random.choice(dummy_users)
+
+        cursor.execute(
+            "UPDATE events SET cost_usd = ?, identity_id = ? WHERE event_id = ?",
+            (round(simulated_cost, 4), simulated_identity, event_id)
+        )
         resolved_count += 1
         
     conn.commit()
