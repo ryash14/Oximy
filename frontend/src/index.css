@@ -197,7 +197,7 @@ tbody tr:hover td { background: rgba(255,255,255,0.015); }
   background: var(--bg-input); border: 1px solid var(--border); border-radius: 6px;
   padding: 1rem; font-family: 'Inter', monospace; font-size: 0.8125rem;
   color: var(--green); line-height: 1.6; white-space: pre-wrap; word-break: break-all;
-  max-height: 220px; overflow-y: auto; margin-bottom: 1.25rem;
+  max-height: 380px; overflow-y: auto; margin-bottom: 1.25rem;
 }
 
 .btn {

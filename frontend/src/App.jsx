@@ -319,6 +319,11 @@ function App() {
                     <div className={`result-box ${isSuccess(p1Result) ? 'result-ok' : 'result-err'}`}>
                       <strong>{isSuccess(p1Result) ? 'Success' : 'Error'}:</strong> {p1Result.message}
                     </div>
+                    {p1Result.event && (
+                      <div className="json-box" style={{marginTop: '1rem'}}>
+                        {JSON.stringify(p1Result.event, null, 2)}
+                      </div>
+                    )}
                     <p style={{ fontSize: '0.875rem', color: 'var(--text-3)', marginTop: '1.5rem', lineHeight: '1.6' }}>
                       Notice how the JSON shapes on the left are completely incompatible?
                       Yet, when ingested, they all land in the Canonical Event Feed below with exactly the same schema.

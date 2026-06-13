@@ -149,13 +149,15 @@ async def ingest_raw(request: Request):
         return {
             "trace": ["success_upsert"], 
             "message": f"Idempotent Upsert: Cost/Identity updated without double-counting tokens.",
-            "event_id": event.event_id
+            "event_id": event.event_id,
+            "event": event.model_dump(exclude={'raw_payload'})
         }
     else:
         return {
             "trace": ["success_insert"], 
             "message": f"Canonical Event Ingested Successfully.",
-            "event_id": event.event_id
+            "event_id": event.event_id,
+            "event": event.model_dump(exclude={'raw_payload'})
         }
 
 if __name__ == "__main__":
