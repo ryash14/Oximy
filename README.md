@@ -31,16 +31,6 @@ The pipeline consists of four immutable stages, ensuring absolute data integrity
 
 *Future Scale:* The current SQLite implementation is perfectly swappable with a Kafka Topic for high-throughput ingest and ClickHouse for columnar analytics, keeping the canonical schema entirely intact.
 
-## 📸 Interactive Dashboard Demo
-
-The frontend is a custom-built, responsive React interface showcasing the real-time execution traces of the pipeline. It isn't a mockup — it's live production code.
-
-*(Insert Demo Video / Screen Recording Here)*
-
-![Dashboard Preview](https://via.placeholder.com/1200x800.png?text=Oximy+Dashboard+Demo+-+Add+Screenshot+Here)
-
-*Note to Evaluators: I highly recommend cloning the repo and running the interactive sandbox locally to try to break the agents and see the guardrails hold up.*
-
 ## 💻 How to Run Locally
 
 ### 1. Clone & Setup Backend
