@@ -4,7 +4,15 @@ Oximy Core normalizes AI-provider usage events into a common schema for local an
 
 Usage data arrives with provider-specific field names, redeliveries and facts that become available later. Oximy puts that variability at the parsing boundary. Downstream metrics read a canonical event record rather than duplicating provider assumptions throughout the application.
 
-[Quick start](#quick-start) · [How it works](#how-it-works) · [Development](#development) · [Contributing](CONTRIBUTING.md)
+[Quick start](#quick-start) · [Architecture](#architecture-and-request-flow) · [Development](#development) · [Contributing](CONTRIBUTING.md)
+
+## Capabilities
+
+| Workflow | Result |
+|---|---|
+| Normalize events | Keep provider-specific usage fields behind parser adapters. |
+| Reconcile facts | Upsert stable event identities and selected late-arriving fields. |
+| Inspect usage | Expose stored events and aggregates through the local API and dashboard. |
 
 ## Quick start
 
@@ -30,14 +38,14 @@ Start the API and open `http://127.0.0.1:8000/docs`. The event and metric endpoi
 
 The database file is `oximy_events.db` in the working directory. Keep real provider payloads and identities out of public screenshots or issue reports. `replay.py` and `seed.py` provide additional experiment entrypoints; read their effects before running them against a database you want to preserve.
 
-## How it works
+## Architecture and request flow
 
 1. A provider payload reaches the FastAPI ingestion path.
 2. The parser registry selects a provider adapter and checks required structure.
 3. A canonical event is assigned a source-based identity and upserted into SQLite.
 4. Metrics and event APIs expose the stored data to the React dashboard.
 
-### Component boundaries
+### Component model
 
 ```mermaid
 flowchart TB
@@ -50,7 +58,7 @@ flowchart TB
     Metrics --> UI["React dashboard"]
 ```
 
-### Design decisions
+### Engineering decisions
 
 For stable provider event IDs, the store hashes `source::source_event_id` and updates selected late-arriving facts without inserting another row. The raw payload is preserved for inspection. A missing Gemini event ID currently falls back to a timestamp-derived ID, so deduplication is not guaranteed for that case.
 
